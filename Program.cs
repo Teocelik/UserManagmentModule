@@ -11,10 +11,12 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-//veritabaný baðlantýsýný servis olarak container'a ekleyelim.(DI)
+//veritabanï¿½ baï¿½lantï¿½sï¿½nï¿½ servis olarak container'a ekleyelim.(DI)
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("SqlConnect")));
 
-//Identity hizmetlerini kullanmak için servis olarak container'a ekleyelim
+builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<AppDbContext>();
+
+//Identity hizmetlerini kullanmak iï¿½in servis olarak container'a ekleyelim
 builder.Services.AddIdentity<User, IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
@@ -36,7 +38,7 @@ app.UseAuthorization();
 
 app.MapStaticAssets();
 
-//gelen isteklerin nasýl karþýlanacaðýný belirlenen yer!
+//gelen isteklerin nasï¿½l karï¿½ï¿½lanacaï¿½ï¿½nï¿½ belirlenen yer!
 app.MapDefaultControllerRoute();
 
 

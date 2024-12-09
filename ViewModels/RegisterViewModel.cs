@@ -4,21 +4,21 @@ namespace UserManagmentModule.ViewModels
 {
     public class RegisterViewModel
     {
-        [Required(ErrorMessage = "Kullanıcı adını giriniz!")]
-        public string UserName { get; set; }
-
-        [Required(ErrorMessage = "E-mail adresini giriniz!")]
+        [Required]
         [EmailAddress]
+        [Display(Name = "Email")]
         public string Email { get; set; }
 
-        [Required(ErrorMessage = "şifreyi giriniz!")]
-        [MinLength(6, ErrorMessage = "Parola 6 karakterden kısa olmamalıdır!")]
-        [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$",
-        ErrorMessage = "Prolanız, küçük harf, büyük harf ve sayı içermelidir.")]
+        [Required]
+        [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+        [DataType(DataType.Password)]
+        [Display(Name = "Password")]
         public string Password { get; set; }
 
-        [Required(ErrorMessage = "şifreyi tekrar giriniz!")]
-        [Compare("Password", ErrorMessage = "Şifre eşleşmedi!.")]
+        
+        [DataType(DataType.Password)]
+        [Display(Name = "Confirm password")]
+        [Compare("Password", ErrorMessage = "Şifre ve şifre tekrarı uyuşmuyor.!")]
         public string ConfirmPassword { get; set; }
     }
 }
