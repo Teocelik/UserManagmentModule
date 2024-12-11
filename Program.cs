@@ -2,6 +2,7 @@
 
 
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using UserManagmentModule.DataAccess;
 using UserManagmentModule.Models;
@@ -14,12 +15,15 @@ builder.Services.AddControllersWithViews();
 //veritaban� ba�lant�s�n� servis olarak container'a ekleyelim.(DI)
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("SqlConnect")));
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<AppDbContext>();
+//builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<AppDbContext>();
 
 //Identity hizmetlerini kullanmak i�in servis olarak container'a ekleyelim
-builder.Services.AddIdentity<User, IdentityRole>()
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
+
+builder.Services.AddScoped<IUserStore<IdentityUser>, UserOnlyStore<IdentityUser, AppDbContext>>(); 
+builder.Services.AddScoped<IUserEmailStore<IdentityUser>, UserOnlyStore<IdentityUser, AppDbContext>>();
 
 var app = builder.Build();
 

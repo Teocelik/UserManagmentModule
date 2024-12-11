@@ -22,13 +22,17 @@ namespace UserManagmentModule.Controllers
         private readonly IUserStore<IdentityUser> _userStore;
         private readonly IUserEmailStore<IdentityUser> _userEmailStore;
 
+        //
+        private readonly ILogger<RegisterViewModel> _logger;
+
         //Constructor
-        public UserController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, IUserStore<IdentityUser> userStore, IUserEmailStore<IdentityUser> userEmailStore)
+        public UserController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, IUserStore<IdentityUser> userStore, IUserEmailStore<IdentityUser> userEmailStore, ILogger<RegisterViewModel> logger)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _userStore = userStore;
             _userEmailStore = userEmailStore;
+            _logger = logger;
         }
 
         public IActionResult Index()
@@ -64,9 +68,20 @@ namespace UserManagmentModule.Controllers
             //Kullanıcıyı oluşturalım
             var result = await _userManager.CreateAsync(user, model.Password);
 
-            //devam et..
+            //eğer kullanıcı başarılı oluşturulmuşsa..
+            if(result.Succeeded)
+            {
+                _logger.LogInformation("Kullanıcı başarıyla oluşturuldu!");
 
+                await _signInManager.SignInAsync(user, isPersistent: false);
 
+                return RedirectToAction("Index", "Home");
+            }
+            foreach(var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+            return View(model);
         }
     }
 }
