@@ -12,16 +12,13 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-//veritaban� ba�lant�s�n� servis olarak container'a ekleyelim.(DI)
+//veritaban� baglantısını servis olarak container'a ekleyelim.(DI)
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("SqlConnect")));
 
-//builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<AppDbContext>();
+//varsayılan olarak eklenen servis: Identity hizmetlerini kullanmak için 
+builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<AppDbContext>();
 
-//Identity hizmetlerini kullanmak i�in servis olarak container'a ekleyelim
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
-    .AddEntityFrameworkStores<AppDbContext>()
-    .AddDefaultTokenProviders();
-
+//Kullanıcı bilgilerini depolamak ve yönetmek için Identity ile gelen IUserStore ve IUserEmailStore'ı servis olarak ekleyelim
 builder.Services.AddScoped<IUserStore<IdentityUser>, UserOnlyStore<IdentityUser, AppDbContext>>(); 
 builder.Services.AddScoped<IUserEmailStore<IdentityUser>, UserOnlyStore<IdentityUser, AppDbContext>>();
 

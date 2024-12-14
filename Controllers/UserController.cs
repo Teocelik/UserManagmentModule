@@ -6,7 +6,7 @@ using UserManagmentModule.ViewModels;
 namespace UserManagmentModule.Controllers
 {
     /*Bu controller, Normal bir kullanıcın giriş yapması, kayıt olması, şifre değiştirmesi vs gibi kendi
-     profilini yönetmesi işlevleri barındırır.*/
+     profilini yönetmesi işlevlerini barındırır.*/
     public class UserController : Controller
     {
         /*Kullanıcı oluşturma, güncelleme, parola sıfırlama vs işlemleri yapmak için Identity 
@@ -26,7 +26,8 @@ namespace UserManagmentModule.Controllers
         private readonly ILogger<RegisterViewModel> _logger;
 
         //Constructor
-        public UserController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, IUserStore<IdentityUser> userStore, IUserEmailStore<IdentityUser> userEmailStore, ILogger<RegisterViewModel> logger)
+        public UserController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager,
+            IUserStore<IdentityUser> userStore, IUserEmailStore<IdentityUser> userEmailStore, ILogger<RegisterViewModel> logger)
         {
             _signInManager = signInManager;
             _userManager = userManager;
