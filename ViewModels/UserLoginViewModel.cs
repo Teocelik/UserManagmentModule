@@ -1,6 +1,6 @@
 ﻿namespace UserManagmentModule.ViewModels
 {
-    public class LoginViewModel
+    public class UserLoginViewModel
     {
 
     }

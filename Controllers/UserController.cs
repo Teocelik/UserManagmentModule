@@ -23,11 +23,11 @@ namespace UserManagmentModule.Controllers
         private readonly IUserEmailStore<IdentityUser> _userEmailStore;
 
         //
-        private readonly ILogger<RegisterViewModel> _logger;
+        private readonly ILogger<UserSingInViewModel> _logger;
 
         //Constructor
         public UserController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager,
-            IUserStore<IdentityUser> userStore, IUserEmailStore<IdentityUser> userEmailStore, ILogger<RegisterViewModel> logger)
+            IUserStore<IdentityUser> userStore, IUserEmailStore<IdentityUser> userEmailStore, ILogger<UserSingInViewModel> logger)
         {
             _signInManager = signInManager;
             _userManager = userManager;
@@ -43,14 +43,14 @@ namespace UserManagmentModule.Controllers
 
         //Kullanıcının kayıt olması için kayıt formunu görüntüler.
         [HttpGet]
-        public IActionResult Register()
+        public IActionResult SignIn()
         {
             return View();
         }
 
         //Kullanıcının girdiği bilgileri alır ve işler.
         [HttpPost]
-        public async Task<IActionResult> Register(RegisterViewModel model)
+        public async Task<IActionResult> SignIn(UserSingInViewModel model)
         {
             //Gelen veri formatı doğru değilse..
             if(!ModelState.IsValid)
@@ -59,12 +59,13 @@ namespace UserManagmentModule.Controllers
             }
 
             //ViewModel'dan gelen veriler doğru formatta ise..
-            //yeni bir IdentityUser(kullanıcı) nesnesi oluştur
+            //yeni bir User(kullanıcı) nesnesi oluştur
             var user = new IdentityUser();
 
-            //kullanıcı adı ve e-posta bilgilerini ata.
+            //Kullanıcı adı ve eMail set et.
             await _userStore.SetUserNameAsync(user, model.Email, CancellationToken.None);
             await _userEmailStore.SetEmailAsync(user, model.Email, CancellationToken.None);
+           
 
             //Kullanıcıyı oluşturalım
             var result = await _userManager.CreateAsync(user, model.Password);
@@ -74,6 +75,7 @@ namespace UserManagmentModule.Controllers
             {
                 _logger.LogInformation("Kullanıcı başarıyla oluşturuldu!");
 
+                //Oturum aç!
                 await _signInManager.SignInAsync(user, isPersistent: false);
 
                 return RedirectToAction("Index", "Home");
