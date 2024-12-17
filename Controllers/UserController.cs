@@ -48,6 +48,8 @@ namespace UserManagmentModule.Controllers
             return View();
         }
 
+     //-------------------------------------------------------------
+
         //Kullanıcının girdiği bilgileri alır ve işler.
         [HttpPost]
         public async Task<IActionResult> SignIn(UserSingInViewModel model)
@@ -78,11 +80,36 @@ namespace UserManagmentModule.Controllers
                 //Oturum aç!
                 await _signInManager.SignInAsync(user, isPersistent: false);
 
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "User");
             }
             foreach(var error in result.Errors)
             {
                 ModelState.AddModelError(string.Empty, error.Description);
+            }
+            return View(model);
+        }
+
+        //------------------------------------------------------
+
+        //Kullanıcının giriş yapması için form'u açar.
+        [HttpGet]
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Login(UserLoginViewModel model)
+        {
+            //Kullanıcıdan gelen veri'nin formatını kontrol et.
+            if(ModelState.IsValid)
+            {
+                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+
+                if(result.Succeeded)
+                {
+                    return RedirectToAction();
+                }
             }
             return View(model);
         }
