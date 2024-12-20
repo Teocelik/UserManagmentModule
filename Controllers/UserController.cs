@@ -80,7 +80,7 @@ namespace UserManagmentModule.Controllers
                 //Oturum aç!
                 await _signInManager.SignInAsync(user, isPersistent: false);
 
-                return RedirectToAction("Index", "User");
+                return RedirectToAction("LoginSucceed");
             }
             foreach(var error in result.Errors)
             {
@@ -106,12 +106,24 @@ namespace UserManagmentModule.Controllers
             {
                 var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
 
-                if(result.Succeeded)
+                if (result.Succeeded)
                 {
-                    return RedirectToAction();
+                    _logger.LogInformation("Kullanıcı giriş yaptı!");
+                    return RedirectToAction("LoginSucceed");
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Giriş yapılamadı!");
                 }
             }
             return View(model);
+        }
+
+        //---------------------------
+        //Kullanıcının başarılı bir girişi sonrası açılacak olan sayfa
+        public IActionResult LoginSucceed()
+        {
+            return View();
         }
     }
 }
