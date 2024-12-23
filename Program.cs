@@ -12,7 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-//veritaban� baglantısını servis olarak container'a ekleyelim.(DI)
+//veritabanı baglantısını servis olarak container'a ekleyelim.(DI)
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("SqlConnect")));
 
 //Identity hizmetleri
@@ -41,7 +41,7 @@ app.UseAuthorization();
 
 app.MapStaticAssets();
 
-//gelen isteklerin nas�l kar��lanaca��n� belirlenen yer!
+//gelen isteklerin nasil karsilanacağini belirten yer!
 app.MapDefaultControllerRoute();
 
 

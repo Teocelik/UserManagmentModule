@@ -36,6 +36,7 @@ namespace UserManagmentModule.Controllers
             _logger = logger;
         }
 
+        //Kullanıcının başarılı bir girişi sonrası açılacak olan sayfa
         public IActionResult Index()
         {
             return View();
@@ -109,7 +110,7 @@ namespace UserManagmentModule.Controllers
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("Kullanıcı giriş yaptı!");
-                    return RedirectToAction("LoginSucceed");
+                    return RedirectToAction("Index");
                 }
                 else
                 {
@@ -117,13 +118,6 @@ namespace UserManagmentModule.Controllers
                 }
             }
             return View(model);
-        }
-
-        //---------------------------
-        //Kullanıcının başarılı bir girişi sonrası açılacak olan sayfa
-        public IActionResult LoginSucceed()
-        {
-            return View();
         }
     }
 }
