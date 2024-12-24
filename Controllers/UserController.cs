@@ -94,11 +94,10 @@ namespace UserManagmentModule.Controllers
 
         //Kullanıcının giriş yapması için form'u açar.
         [HttpGet]
-        public IActionResult Login()
-        {
-            return View();
-        }
+        public IActionResult Login() => View();
+        
 
+        //Form'dan gelen verileri alır ve işler
         [HttpPost]
         public async Task<IActionResult> Login(UserLoginViewModel model)
         {
@@ -119,5 +118,52 @@ namespace UserManagmentModule.Controllers
             }
             return View(model);
         }
+
+        //------------------------------------------------------
+        //şifre değiştirme işlemleri...
+
+        //şifre değişikliği için Form açar
+        [HttpGet]
+        public IActionResult ChangePassword() => View();
+
+        //Form'dan gelen verileri alır ve işler.
+        [HttpPost]
+        public async Task<IActionResult> ChangePassword(UserChangePasswordViewModel model)
+        {
+            //kullanıcıdan gelen veri formatını doğrula
+            if(!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            //Oturumumdaki kullanıcıyı getir(yükle)
+            var user = await _userManager.GetUserAsync(User);
+
+            
+            if(user == null)
+            {
+                return NotFound($"Kullanıcı bulunamadı!");
+            }
+
+            //şifreyi değiştir!
+            var changePasswordResult = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+
+            //işlem başarılı mı
+            if(!changePasswordResult.Succeeded)
+            {
+                foreach(var error in changePasswordResult.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+            }
+
+            //Eğer işlem başarılı ise oturumu yenile..
+            await _signInManager.RefreshSignInAsync(user);
+
+            _logger.LogInformation("Kullanıcı, şifresini başarılı bir şekilde değiştirdi!");
+
+            return RedirectToAction("Index", "Home");
+        }
+
     }
 }
