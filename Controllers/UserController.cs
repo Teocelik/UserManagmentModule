@@ -122,48 +122,55 @@ namespace UserManagmentModule.Controllers
         //------------------------------------------------------
         //şifre değiştirme işlemleri...
 
-        //şifre değişikliği için Form açar
+        // Form açar
         [HttpGet]
         public IActionResult ChangePassword() => View();
+
+
 
         //Form'dan gelen verileri alır ve işler.
         [HttpPost]
         public async Task<IActionResult> ChangePassword(UserChangePasswordViewModel model)
         {
-            //kullanıcıdan gelen veri formatını doğrula
+            //Model'dan gelen veri formatı doğru mu
             if(!ModelState.IsValid)
             {
                 return View(model);
             }
 
-            //Oturumumdaki kullanıcıyı getir(yükle)
+            //Oturumdaki kullanıcıyı getir(yükle)
             var user = await _userManager.GetUserAsync(User);
 
-            
+            //kullanıcı bulundu mu
             if(user == null)
             {
-                return NotFound($"Kullanıcı bulunamadı!");
+                return NotFound("Kullanıcı bulunamadı!");
             }
 
-            //şifreyi değiştir!
-            var changePasswordResult = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+            //kullanıcı bulunduysa şifreyi değiştir
+            var changePassword = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
 
-            //işlem başarılı mı
-            if(!changePasswordResult.Succeeded)
+            //şifre değiştirme işlemi başarılı mı 
+            if(!changePassword.Succeeded)
             {
-                foreach(var error in changePasswordResult.Errors)
+                foreach(var error in changePassword.Errors)
                 {
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
             }
 
-            //Eğer işlem başarılı ise oturumu yenile..
+            //işlem başarılı ise oturumu yenile..
             await _signInManager.RefreshSignInAsync(user);
 
-            _logger.LogInformation("Kullanıcı, şifresini başarılı bir şekilde değiştirdi!");
-
+            _logger.LogInformation($"kullanıcı Şifresini başarı ile değiştirdi!");
             return RedirectToAction("Index", "Home");
         }
 
+        //------------------------------------
+        [HttpGet]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
     }
 }
