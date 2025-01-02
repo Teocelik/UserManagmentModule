@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using UserManagmentModule.Models;
 using UserManagmentModule.ViewModels;
 
@@ -167,10 +168,86 @@ namespace UserManagmentModule.Controllers
         }
 
         //------------------------------------
+        //Şifre unutulması halinde, şifre değiştirme işlemleri
+
+        //Verify Email Form'u açar!
         [HttpGet]
-        public IActionResult ForgotPassword()
+        public IActionResult VerifyEmail() => View();
+        
+
+        [HttpPost]
+        public async Task<IActionResult> VerifyEmail(UserVerifyEmailViewModel model)
         {
-            return View();
+            //Kullanıcıdan gelen veri formatı doğruysa...
+            if(ModelState.IsValid)
+            {
+                //kullanıcıyı bul
+                var user = await _userManager.FindByNameAsync(model.Email);
+
+                if(user == null)
+                {
+                    ModelState.AddModelError("", "Kullanıcı bulunamadı!");
+                    return View(model);
+                }
+                else
+                {
+                    // Taşınacak Route değeri: (Email)
+                    return RedirectToAction("ResetPassword", "User", new { userName = model.Email});
+                }
+            }
+            return View(model);
+        }
+
+
+        //Şifre sıfırlama Form'unu açmak için get isteği gönderir!
+        [HttpGet]
+        public IActionResult ResetPassword(string userName)
+        {
+            if(string.IsNullOrEmpty(userName))
+            {
+                return RedirectToAction("VerifyEmail", "User");
+            }
+            return View(new UserResetPasswordViewModel { Email = userName});
+        }
+
+
+
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(UserResetPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByNameAsync(model.Email);
+
+                if (user != null)
+                {
+                    var result = await _userManager.RemovePasswordAsync(user);
+
+                    if (result.Succeeded)
+                    {
+                        result = await _userManager.AddPasswordAsync(user, model.NewPassword);
+                        return RedirectToAction("Index", "Home");
+                    }
+                    else
+                    {
+                        foreach (var error in result.Errors)
+                        {
+                            ModelState.AddModelError(string.Empty, error.Description);
+                        }
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Kullanıcı bulunamadı!");
+                    return View(model);
+                }
+            }
+            else
+            {
+                ModelState.AddModelError("", "Bir hata oluştu!");
+                return View(model);
+            }
+            return View(model);
         }
     }
 }
