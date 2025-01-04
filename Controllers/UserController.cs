@@ -24,11 +24,11 @@ namespace UserManagmentModule.Controllers
         private readonly IUserEmailStore<IdentityUser> _userEmailStore;
 
         //
-        private readonly ILogger<UserSingInViewModel> _logger;
+        private readonly ILogger<UserRegisterViewModel> _logger;
 
         //Constructor
         public UserController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager,
-            IUserStore<IdentityUser> userStore, IUserEmailStore<IdentityUser> userEmailStore, ILogger<UserSingInViewModel> logger)
+            IUserStore<IdentityUser> userStore, IUserEmailStore<IdentityUser> userEmailStore, ILogger<UserRegisterViewModel> logger)
         {
             _signInManager = signInManager;
             _userManager = userManager;
@@ -45,7 +45,7 @@ namespace UserManagmentModule.Controllers
 
         //Kullanıcının kayıt olması için kayıt formunu görüntüler.
         [HttpGet]
-        public IActionResult SignIn()
+        public IActionResult Register()
         {
             return View();
         }
@@ -54,7 +54,7 @@ namespace UserManagmentModule.Controllers
 
         //Kullanıcının girdiği bilgileri alır ve işler.
         [HttpPost]
-        public async Task<IActionResult> SignIn(UserSingInViewModel model)
+        public async Task<IActionResult> Register(UserRegisterViewModel model)
         {
             //Gelen veri formatı doğru değilse..
             if(!ModelState.IsValid)

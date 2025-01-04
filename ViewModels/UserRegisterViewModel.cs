@@ -2,7 +2,7 @@
 
 namespace UserManagmentModule.ViewModels
 {
-    public class UserSingInViewModel
+    public class UserRegisterViewModel
     {
         [Required]
         [EmailAddress]
