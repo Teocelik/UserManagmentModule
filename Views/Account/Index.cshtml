@@ -1,10 +1,13 @@
 ﻿@{
-    ViewData["Title"] = "You are logged in :)";
-    // Layout = "~/Views/Shared/_LoginPartial.cshtml";
+    ViewData["Title"] = "You are logged in!";
 }
 <h2>Giriş mesajı!</h2>
 <p>Giriş başarılı :)</p>
-<div>
-    @await Html.PartialAsync("_LoginPartial")
-</div>
+
+<li class="nav-item">
+    <a class="btn btn-primary" asp-controller="Account" asp-action="ChangePassword">Şifremi değiştir</a>
+</li>
+
+
+
 
