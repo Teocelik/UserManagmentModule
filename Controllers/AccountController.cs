@@ -8,27 +8,27 @@ namespace UserManagmentModule.Controllers
 {
     /*Bu controller, Normal bir kullanıcın giriş yapması, kayıt olması, şifre değiştirmesi vs gibi kendi
      profilini yönetmesi işlevlerini barındırır.*/
-    public class UserController : Controller
+    public class AccountController : Controller
     {
         /*Kullanıcı oluşturma, güncelleme, parola sıfırlama vs işlemleri yapmak için Identity 
          * kütüphanesinin sunduğu UserManager class’ını kullanacağım(filed olarak)*/
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<User> _userManager;
 
         /*Kullanıcıların giriş işlemlerini yönetmek, örn/ Giriş yapma, çıkış yapma, 
          iki faktörlü kimlik doğrulama gibi işlemleri için Identity kütüphanesinin
           sunduğu SignInManager class’ını kullanacağım(filed olarak)*/
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly SignInManager<User> _signInManager;
 
         /*_userStore ve _emailStore ile kullanıcıya ait temel bilgilerin (kullanıcı adı ve e-posta) ayarlanmasını sağlar*/
-        private readonly IUserStore<IdentityUser> _userStore;
-        private readonly IUserEmailStore<IdentityUser> _userEmailStore;
+        private readonly IUserStore<User> _userStore;
+        private readonly IUserEmailStore<User> _userEmailStore;
 
         //
         private readonly ILogger<UserRegisterViewModel> _logger;
 
         //Constructor
-        public UserController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager,
-            IUserStore<IdentityUser> userStore, IUserEmailStore<IdentityUser> userEmailStore, ILogger<UserRegisterViewModel> logger)
+        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager,
+            IUserStore<User> userStore, IUserEmailStore<User> userEmailStore, ILogger<UserRegisterViewModel> logger)
         {
             _signInManager = signInManager;
             _userManager = userManager;
@@ -64,7 +64,7 @@ namespace UserManagmentModule.Controllers
 
             //ViewModel'dan gelen veriler doğru formatta ise..
             //yeni bir User(kullanıcı) nesnesi oluştur
-            var user = new IdentityUser();
+            var user = new User();
 
             //Kullanıcı adı ve eMail set et.
             await _userStore.SetUserNameAsync(user, model.Email, CancellationToken.None);
@@ -215,22 +215,27 @@ namespace UserManagmentModule.Controllers
         [HttpPost]
         public async Task<IActionResult> ResetPassword(UserResetPasswordViewModel model)
         {
-            if (ModelState.IsValid)
+            //Gelen veri formatını kontrol et!
+            if(ModelState.IsValid)
             {
+                //kullanıcıyı bul!
                 var user = await _userManager.FindByNameAsync(model.Email);
 
-                if (user != null)
+                if(user != null)
                 {
+                    //mevcut şifreyi sil
                     var result = await _userManager.RemovePasswordAsync(user);
 
-                    if (result.Succeeded)
+                    if(result.Succeeded)
                     {
+                        //yeni şifreyi belirle!
                         result = await _userManager.AddPasswordAsync(user, model.NewPassword);
+                        _logger.LogInformation($"Kullanıcı, başarılı bir şekilde şifresini değiştirdi!");
                         return RedirectToAction("Index", "Home");
                     }
                     else
                     {
-                        foreach (var error in result.Errors)
+                        foreach(var error in result.Errors)
                         {
                             ModelState.AddModelError(string.Empty, error.Description);
                         }
@@ -248,6 +253,13 @@ namespace UserManagmentModule.Controllers
                 return View(model);
             }
             return View(model);
+        }
+
+
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("Index", "Home");
         }
     }
 }

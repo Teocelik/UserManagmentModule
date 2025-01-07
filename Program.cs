@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using UserManagmentModule.DataAccess;
 using UserManagmentModule.Models;
 
@@ -13,13 +14,23 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("SqlConnect")));
 
 //Identity hizmetleri
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
-    .AddEntityFrameworkStores<AppDbContext>();
+builder.Services.AddIdentity<User, IdentityRole>(options =>
+{
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequiredLength = 8;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireLowercase = true;
+    options.User.RequireUniqueEmail = true;
+    options.SignIn.RequireConfirmedAccount = false;
+    options.SignIn.RequireConfirmedEmail = false;
+    options.SignIn.RequireConfirmedPhoneNumber = false;
+})
+    .AddEntityFrameworkStores<AppDbContext>()
+    .AddDefaultTokenProviders();
 
 
-//Kullanıcı bilgilerini depolamak ve yönetmek için Identity ile gelen IUserStore ve IUserEmailStore'ı servis olarak ekleyelim
-builder.Services.AddScoped<IUserStore<IdentityUser>, UserOnlyStore<IdentityUser, AppDbContext>>(); 
-builder.Services.AddScoped<IUserEmailStore<IdentityUser>, UserOnlyStore<IdentityUser, AppDbContext>>();
+builder.Services.AddScoped<IUserStore<User>, UserOnlyStore<User, AppDbContext>>();
+builder.Services.AddScoped<IUserEmailStore<User>, UserOnlyStore<User, AppDbContext>>();
 
 var app = builder.Build();
 

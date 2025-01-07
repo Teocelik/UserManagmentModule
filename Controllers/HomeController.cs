@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UserManagmentModule.Models;
 
@@ -17,6 +18,8 @@ namespace UserManagmentModule.Controllers
         {
             return View();
         }
+
+        [Authorize]
 
         public IActionResult Privacy()
         {

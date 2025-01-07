@@ -2,7 +2,7 @@
 
 namespace UserManagmentModule.Models
 {
-    public class User:IdentityUser
+    public class User : IdentityUser
     {
         
     }
