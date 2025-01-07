@@ -53,4 +53,4 @@ dotnet run
 
 ## Katkıda Bulunma
 
-Katkılarınızı memnuniyetle karşılıyoruz. Lütfen önce bir konu açarak neyi değiştirmek istediğinizi tartışın. Değişiklikleriniz onaylandıktan sonra bir pull request oluşturabilirsiniz.
+Katkılarınızı memnuniyetle karşılıyorum. Lütfen önce bir konu açarak neyi değiştirmek istediğinizi tartışın. Değişiklikleriniz onaylandıktan sonra bir pull request oluşturabilirsiniz.
